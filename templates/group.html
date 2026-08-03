@@ -1,0 +1,62 @@
+<h3>Last month</h3>
+
+<table class="last-month">
+    <tr>
+        <th>Category</th>
+        <th>Subtotal</th>
+        <th>Percent</th>
+        <th>Expected</th>
+        <th>Deviation</th>
+    </tr>
+    {% for (name, category) in report.last_month.categories.iter() %}
+    <tr>
+        <td>{{ name }}</td>
+        <td>{{ Dollars(*category.subtotal) }}</td>
+        <td>{{ category.percent | fmt("{:.2}")}}%</td>
+        <td>{{ Dollars(*category.expected) }}</td>
+        <td>{{ category.deviation | fmt("{:+.2}") }}%</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>Total</td>
+        <td>{{ Dollars(*report.last_month.total.subtotal) }}</td>
+        <td>{{ report.last_month.total.percent | fmt("{:.2}") }}%</td>
+        <td>{{ Dollars(*report.last_month.total.expected) }}</td>
+        <td>{{ report.last_month.total.deviation | fmt("{:+.2}") }}%</td>
+    </tr>
+</table>
+
+<h3>Average month</h3>
+
+<table class="average-month">
+    <tr>
+        <th>Category</th>
+        <th>Subtotal</th>
+        <th>Percent</th>
+        <th>Previous</th>
+        <th>Change</th>
+    </tr>
+    {% for (name, category) in report.average_month.categories.iter() %}
+    <tr>
+        <td>{{ name }}</td>
+        <td>{{ Dollars(*category.subtotal) }}</td>
+        <td>{{ category.percent | fmt("{:.2}") }}%</td>
+        <td>{{ Dollars(*category.previous) }}</td>
+        <td>{{ category.change | fmt("{:+.2}") }}%</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>Total</td>
+        <td>{{ Dollars(*report.average_month.total.subtotal) }}</td>
+        <td>{{ report.average_month.total.percent | fmt("{:.2}") }}%</td>
+        <td>{{ Dollars(*report.average_month.total.previous) }}</td>
+        <td>{{ report.average_month.total.change | fmt("{:+.2}") }}%</td>
+    </tr>
+    <tr>
+        <td>Total (yearly)</td>
+        <td>{{ Dollars(*report.average_month.yearly_subtotal) }}</td>
+        <td></td>
+        <td>{{ Dollars(*report.average_month.prev_yearly_subtotal) }}</td>
+        <td></td>
+    </tr>
+</table>

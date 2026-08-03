@@ -1,0 +1,194 @@
+<head>
+
+<title>Finance report</title>
+<style>
+    * {
+        font-family: monospace;
+    }
+
+    .container {
+        width: 800px;
+        margin: 0 auto;
+    }
+
+    h2 {
+        border-bottom: 2px solid black;
+        margin-top: 2em;
+    }
+
+    table {
+        width: 100%;
+        border: 2px solid black;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    th, td {
+        padding: 0.5em 1em 0.5em 1em;
+        border: 1px solid black;
+        vertical-align: top;
+    }
+
+    th {
+        text-align: center;
+        border-bottom: 2px solid black;
+    }
+
+    td {
+        text-align: right;
+    }
+
+    tr:nth-child(even) {
+        background-color: #ddd;
+    }
+
+    #period td:nth-child(1),
+    .last-month td:nth-child(1),
+    .average-month td:nth-child(1),
+    #overall td:nth-child(1),
+    .categorized-transactions td:nth-child(3)
+    {
+        text-align: left;
+    }
+
+    .last-month tr:nth-last-child(1) td,
+    .average-month tr:nth-last-child(2) td {
+        border-top: 2px solid black;
+    }
+
+    .last-month th:nth-child(4),
+    .last-month td:nth-child(4),
+    .average-month th:nth-child(4),
+    .average-month td:nth-child(4) {
+        border-left: 2px solid black;
+    }
+
+    .last-month tr:nth-last-child(1) td,
+    .average-month tr:nth-last-child(2) td,
+    .average-month tr:nth-last-child(1) td {
+        font-weight: bold;
+    }
+
+    .last-month th:first-child,
+    .average-month th:first-child {
+        width: 25%;
+    }
+
+    #retirement th:first-child {
+        width: 5%;
+    }
+
+    #retirement th:nth-child(2) {
+        width: 25%;
+    }
+
+    .categorized-transactions td:first-child,
+    .categorized-transactions td:nth-child(2) {
+        width: 12%;
+    }
+
+    #period td:last-child,
+    #overall td:last-child {
+        width: 20%;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>Finance report</h1>
+
+<table id="period">
+    <tr>
+        <td>Period start</td>
+        <td>{{ report.period_start }}</td>
+    </tr>
+    <tr>
+        <td>Period end</td>
+        <td>{{ report.period_end }}</td>
+    </tr>
+</table>
+
+<h2>Income</h2>
+
+{{ GroupTemplate { report: report.income } | safe }}
+
+<h2>Shared expenses</h2>
+
+{{ GroupTemplate { report: report.shared_expenses } | safe }}
+
+<h2>Individual expenses</h2>
+
+{{ GroupTemplate { report: report.individual_expenses } | safe }}
+
+<h2>Overall</h2>
+
+<table id="overall">
+    <tr>
+        <td>Net savings</td>
+        <td>{{ Dollars(*report.overall.net_savings) }}</td>
+    </tr>
+    <tr>
+        <td>Per month</td>
+        <td>{{ Dollars(*report.overall.net_savings_per_month) }}</td>
+    </tr>
+    <tr>
+        <td>Spending-to-income ratio</td>
+        <td>{{ report.overall.spending_income_ratio | fmt("{:.2}") }}%</td>
+    </tr>
+    <tr>
+        <td>Savings-to-income ratio</td>
+        <td>{{ report.overall.savings_income_ratio | fmt("{:.2}") }}%</td>
+    </tr>
+</table>
+
+<h2>Retirement calculator</h2>
+
+<table id="retirement">
+    <tr>
+        <th></th>
+        <th></th>
+        <th colspan="2">Brokerage only</th>
+        <th colspan="2">All investments</th>
+    </tr>
+    <tr>
+        <th>APY</th>
+        <th>Total needed</th>
+        <th>Date</th>
+        <th>Years</th>
+        <th>Date</th>
+        <th>Years</th>
+    </tr>
+    {% for projection in report.retirement.projections %}
+    <tr>
+        <td>{{ projection.percent_apy }}%</td>
+        <td>{{ Dollars(*projection.total_needed) }}</td>
+        <td>{{ projection.brokerage_only.date }}</td>
+        <td>{{ projection.brokerage_only.years_away | fmt("{:.2}") }}</td>
+        <td>{{ projection.all_investments.date }}</td>
+        <td>{{ projection.all_investments.years_away | fmt("{:.2}") }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Transactions</h2>
+
+{% for categorized_transactions in report.categorized_transactions %}
+<h3>{{ categorized_transactions.name }}</h3>
+
+<table class="categorized-transactions">
+    {% for transaction in categorized_transactions.transactions %}
+    <tr>
+        <td>{{ Dollars(*transaction.amount) }}</td>
+        <td>{{ transaction.date }}</td>
+        <td>{{ transaction.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endfor %}
+
+</div>
+
+</body>
