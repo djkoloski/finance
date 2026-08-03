@@ -8,6 +8,12 @@ goods and services. I also added a retirement calculator so I could better
 understand the value of investing and how much investment I need before I can
 retire comfortably.
 
+## Example output
+
+![summary](https://github.com/djkoloski/finance/raw/main/examples/summary.png "Summary example")
+![income](https://github.com/djkoloski/finance/raw/main/examples/income.png "Income example")
+![retirement](https://github.com/djkoloski/finance/raw/main/examples/retirement.png "Retirement example")
+
 ## Features
 
 Generated financial reports include:
