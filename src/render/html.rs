@@ -2,10 +2,7 @@ use std::io;
 
 use askama::Template;
 
-use crate::{
-    Dollars,
-    report::{GroupReport, Report},
-};
+use crate::report::{GroupReport, Report};
 
 #[derive(Template)]
 #[template(path = "report.html")]

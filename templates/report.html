@@ -45,7 +45,7 @@
     #period td:nth-child(1),
     .last-month td:nth-child(1),
     .average-month td:nth-child(1),
-    #overall td:nth-child(1),
+    #yearly td:nth-child(1),
     .categorized-transactions td:nth-child(3)
     {
         text-align: left;
@@ -87,8 +87,8 @@
         width: 12%;
     }
 
-    #period td:last-child,
-    #overall td:last-child {
+    #period th:not(:first-child),
+    #yearly th:not(:first-child) {
         width: 20%;
     }
 </style>
@@ -102,12 +102,59 @@
 
 <table id="period">
     <tr>
-        <td>Period start</td>
-        <td>{{ report.period_start }}</td>
+        <th></th>
+        <th>Current</th>
+        <th>Previous</th>
     </tr>
     <tr>
-        <td>Period end</td>
+        <td>Start date</td>
+        <td>{{ report.period_start }}</td>
+        <td>{{ report.prev_period_start }}</td>
+    </tr>
+    <tr>
+        <td>End date</td>
         <td>{{ report.period_end }}</td>
+        <td>{{ report.prev_period_end }}</td>
+    </tr>
+</table>
+
+<h2>Yearly summary</h2>
+
+<table id="yearly">
+    <tr>
+        <th></th>
+        <th>Current</th>
+        <th>Previous</th>
+    </tr>
+    <tr>
+        <td>Total income</td>
+        <td>{{ report.yearly.total_income }}</td>
+        <td>{{ report.prev_yearly.total_income }}</td>
+    </tr>
+    <tr>
+        <td>Total spending</td>
+        <td>{{ report.yearly.total_spending }}</td>
+        <td>{{ report.prev_yearly.total_spending }}</td>
+    </tr>
+    <tr>
+        <td>Net savings</td>
+        <td>{{ report.yearly.net_savings }}</td>
+        <td>{{ report.prev_yearly.net_savings }}</td>
+    </tr>
+    <tr>
+        <td>Net savings per month</td>
+        <td>{{ report.yearly.net_savings_per_month }}</td>
+        <td>{{ report.prev_yearly.net_savings_per_month }}</td>
+    </tr>
+    <tr>
+        <td>Spending-to-income ratio (average 80%)</td>
+        <td>{{ report.yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
+        <td>{{ report.prev_yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
+    </tr>
+    <tr>
+        <td>Individual-to-shared ratio (average 60%)</td>
+        <td>{{ report.yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
+        <td>{{ report.prev_yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
     </tr>
 </table>
 
@@ -122,27 +169,6 @@
 <h2>Individual expenses</h2>
 
 {{ GroupTemplate { report: report.individual_expenses } | safe }}
-
-<h2>Overall</h2>
-
-<table id="overall">
-    <tr>
-        <td>Net savings</td>
-        <td>{{ Dollars(*report.overall.net_savings) }}</td>
-    </tr>
-    <tr>
-        <td>Per month</td>
-        <td>{{ Dollars(*report.overall.net_savings_per_month) }}</td>
-    </tr>
-    <tr>
-        <td>Spending-to-income ratio</td>
-        <td>{{ report.overall.spending_income_ratio | fmt("{:.2}") }}%</td>
-    </tr>
-    <tr>
-        <td>Savings-to-income ratio</td>
-        <td>{{ report.overall.savings_income_ratio | fmt("{:.2}") }}%</td>
-    </tr>
-</table>
 
 <h2>Retirement calculator</h2>
 
@@ -164,7 +190,7 @@
     {% for projection in report.retirement.projections %}
     <tr>
         <td>{{ projection.percent_apy }}%</td>
-        <td>{{ Dollars(*projection.total_needed) }}</td>
+        <td>{{ projection.total_needed }}</td>
         <td>{{ projection.brokerage_only.date }}</td>
         <td>{{ projection.brokerage_only.years_away | fmt("{:.2}") }}</td>
         <td>{{ projection.all_investments.date }}</td>
@@ -181,7 +207,7 @@
 <table class="categorized-transactions">
     {% for transaction in categorized_transactions.transactions %}
     <tr>
-        <td>{{ Dollars(*transaction.amount) }}</td>
+        <td>{{ transaction.amount }}</td>
         <td>{{ transaction.date }}</td>
         <td>{{ transaction.description }}</td>
     </tr>

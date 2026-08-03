@@ -1,7 +1,7 @@
 use anyhow::{Result, anyhow, bail};
 use temporal_rs::PlainDate;
 
-use crate::config::Config;
+use crate::{config::Config, dollars::Dollars};
 
 pub struct Account {
     pub transactions: Vec<Transaction>,
@@ -47,7 +47,7 @@ impl Category {
 
 pub struct Transaction {
     pub date: PlainDate,
-    pub amount: f64,
+    pub amount: Dollars,
     #[expect(unused)]
     pub kind: Kind,
     pub description: String,

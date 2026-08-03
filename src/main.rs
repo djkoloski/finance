@@ -1,21 +1,25 @@
 mod config;
 mod data;
+mod dollars;
 mod render;
 mod report;
 
 use core::{
-    fmt,
     ops::{Add, AddAssign},
     str::FromStr as _,
 };
-use std::{fs::File, io::{BufWriter, Write}, path::{Path, PathBuf}};
+use std::{
+    fs::File,
+    io::{BufWriter, Write},
+    path::{Path, PathBuf},
+};
 
 use anyhow::{Context, Result, bail};
 use clap::{Parser, ValueEnum};
 use indexmap::IndexMap;
 use temporal_rs::{Duration, PlainDate};
 
-use crate::{config::*, data::*, report::*};
+use crate::{config::*, data::*, dollars::*, report::*};
 
 const SECONDS_PER_YEAR: f64 = 60.0 * 60.0 * 24.0 * 365.25;
 
@@ -78,26 +82,23 @@ fn generate_report(config_path: &Path) -> Result<Report> {
     let individual_expenses = Group::calculate(&config, &config.individual_expenses, &totals);
 
     let mut transactions_by_category = vec![Vec::new(); config.categories.len()];
-    let start_date = config
-        .end_date
-        .subtract(&Duration::from_str("P1M")?, None)?;
+    let end_date = config.end_date.clone();
+    let start_date = end_date.subtract(&Duration::from_str("P1Y")?, None)?;
+    let prev_end_date = end_date.subtract(&Duration::from_str("P1M")?, None)?;
+    let prev_start_date = prev_end_date.subtract(&Duration::from_str("P1Y")?, None)?;
+
     for account in accounts.iter() {
         for transaction in account.transactions.iter() {
-            let cmp_start = transaction.date.compare_iso(&start_date);
-            let cmp_end = transaction.date.compare_iso(&config.end_date);
+            let cmp_start = transaction.date.compare_iso(&prev_end_date);
+            let cmp_end = transaction.date.compare_iso(&end_date);
             if cmp_start.is_gt() && cmp_end.is_le() {
                 transactions_by_category[transaction.category.index()].push(transaction);
             }
         }
     }
-    for category in transactions_by_category.iter_mut() {
-        category.sort_unstable_by(|a, b| a.amount.total_cmp(&b.amount));
-    }
 
-    let income_total = income.total.yearly_after_last_month;
-    let spending_total = shared_expenses.total.yearly_after_last_month
-        + individual_expenses.total.yearly_after_last_month;
-    let net_savings = income_total + spending_total;
+    let spending_total = shared_expenses.total + individual_expenses.total;
+    let net_savings = income.total + spending_total;
 
     let total_investments = config.investments.brokerage + config.investments.retirement;
 
@@ -106,17 +107,17 @@ fn generate_report(config_path: &Path) -> Result<Report> {
     };
     for rate_percent in 4..=10 {
         let rate = 0.01 * rate_percent as f64;
-        let investments_needed = spending_total.abs() / rate;
+        let investments_needed =
+            Dollars::from_f64(spending_total.yearly_after_last_month.to_f64().abs() / rate);
 
         let years_all = years_until(
             total_investments,
-            net_savings,
+            net_savings.yearly_after_last_month.to_f64(),
             1.0 + rate,
-            investments_needed,
+            investments_needed.to_f64(),
         );
         let secs_all = (years_all * SECONDS_PER_YEAR).floor() as i64;
-        let retire_date_all = config
-            .end_date
+        let retire_date_all = end_date
             .add(
                 &Duration::new(0, 0, 0, 0, 0, 0, secs_all, 0, 0, 0).unwrap(),
                 None,
@@ -125,13 +126,12 @@ fn generate_report(config_path: &Path) -> Result<Report> {
 
         let years_bkg_only = years_until(
             config.investments.brokerage,
-            net_savings,
+            net_savings.yearly_after_last_month.to_f64(),
             1.0 + rate,
-            investments_needed,
+            investments_needed.to_f64(),
         );
         let secs_bkg_only = (years_bkg_only * SECONDS_PER_YEAR).floor() as i64;
-        let retire_date_bkg_only = config
-            .end_date
+        let retire_date_bkg_only = end_date
             .add(
                 &Duration::new(0, 0, 0, 0, 0, 0, secs_bkg_only, 0, 0, 0).unwrap(),
                 None,
@@ -172,20 +172,47 @@ fn generate_report(config_path: &Path) -> Result<Report> {
     }
 
     Ok(Report {
+        prev_period_start: prev_start_date,
+        prev_period_end: prev_end_date,
         period_start: start_date,
-        period_end: config.end_date.clone(),
+        period_end: end_date,
+
+        yearly: report_yearly(
+            income.total.yearly_after_last_month,
+            shared_expenses.total.yearly_after_last_month,
+            individual_expenses.total.yearly_after_last_month,
+        ),
+        prev_yearly: report_yearly(
+            income.total.yearly_before_last_month,
+            shared_expenses.total.yearly_before_last_month,
+            individual_expenses.total.yearly_before_last_month,
+        ),
+
         income: income.report(&config),
         shared_expenses: shared_expenses.report(&config),
         individual_expenses: individual_expenses.report(&config),
-        overall: OverallReport {
-            net_savings,
-            net_savings_per_month: net_savings / 12.0,
-            spending_income_ratio: spending_total.abs() / income_total * 100.0,
-            savings_income_ratio: net_savings / income_total * 100.0,
-        },
+
         retirement,
         categorized_transactions,
     })
+}
+
+fn report_yearly(
+    income: Dollars,
+    shared_expenses: Dollars,
+    individual_expenses: Dollars,
+) -> YearlyReport {
+    let total_spending = shared_expenses + individual_expenses;
+    let net_savings = income + total_spending;
+
+    YearlyReport {
+        total_income: income,
+        total_spending,
+        net_savings,
+        net_savings_per_month: Dollars::from_f64(net_savings.to_f64() / 12.0),
+        spending_income_ratio: total_spending.to_f64().abs() / income.to_f64() * 100.0,
+        individual_shared_ratio: individual_expenses.to_f64() / shared_expenses.to_f64() * 100.0,
+    }
 }
 
 fn compound_with_contribution(p: f64, c: f64, r: f64, n: f64) -> f64 {
@@ -206,69 +233,6 @@ fn years_until(p: f64, c: f64, r: f64, total: f64) -> f64 {
     x
 }
 
-pub struct Dollars(pub f64);
-
-impl fmt::Display for Dollars {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let cents = (self.0.abs() * 100.0).round() as i64;
-
-        let digits = usize::max(cents.checked_ilog10().unwrap_or(0) as usize + 1, 3);
-        let width = if self.0 < 0.0 || f.sign_plus() { 1 } else { 0 } // sign
-            + 1 // $
-            + digits // digits
-            + digits.saturating_sub(3) / 3 // separators
-            + 1; // .
-        if f.align().is_some_and(|a| a == fmt::Alignment::Right)
-            && let Some(w) = f.width()
-            && width < w
-        {
-            write!(f, "{:1$}", "", w - width)?;
-        }
-
-        if self.0 < 0.0 {
-            write!(f, "-")?;
-        } else if f.sign_plus() {
-            write!(f, "+")?;
-        }
-        write!(f, "$")?;
-
-        if cents >= 100 {
-            let mut dollars = cents / 100;
-            let mut digits = dollars.ilog10() + 1;
-            let mut is_first_group = true;
-            while digits > 0 {
-                let mut group_size = digits % 3;
-                if group_size == 0 {
-                    group_size = 3;
-                }
-                let base = 10_i64.pow(digits - group_size);
-                let segment = dollars / base;
-                if is_first_group {
-                    write!(f, "{segment}")?;
-                    is_first_group = false;
-                } else {
-                    write!(f, ",{segment:03}")?;
-                }
-                dollars -= segment * base;
-                digits -= group_size;
-            }
-        } else {
-            write!(f, "0")?;
-        }
-
-        write!(f, ".{:02}", cents % 100)?;
-
-        if f.align().is_none_or(|a| a == fmt::Alignment::Left)
-            && let Some(w) = f.width()
-            && width < w
-        {
-            write!(f, "{:1$}", "", w - width)?;
-        }
-
-        Ok(())
-    }
-}
-
 fn load_accounts(config_path: &Path, config: &Config) -> Result<Vec<Account>> {
     let mut accounts = Vec::new();
 
@@ -283,7 +247,7 @@ fn load_accounts(config_path: &Path, config: &Config) -> Result<Vec<Account>> {
 
             let transaction = Transaction {
                 date: PlainDate::from_str(&record[0])?,
-                amount: record[2].parse()?,
+                amount: Dollars::from_f64(record[2].parse::<f64>()?),
                 kind: match &record[3] {
                     "Deposit" => Kind::Deposit,
                     "Withdrawal" => Kind::Withdrawal,
@@ -307,8 +271,8 @@ fn total_categories(
     accounts: &[Account],
     start_date: &PlainDate,
     end_date: &PlainDate,
-) -> Vec<f64> {
-    let mut category_totals = vec![0.0; config.categories.len()];
+) -> Vec<Dollars> {
+    let mut category_totals = vec![Dollars::ZERO; config.categories.len()];
 
     for account in accounts.iter() {
         for transaction in account.transactions.iter() {
@@ -326,11 +290,11 @@ fn total_categories(
 #[derive(Clone, Copy, Default)]
 struct Total {
     // Total spending based on a year of data ending before the previous month
-    pub yearly_before_last_month: f64,
+    pub yearly_before_last_month: Dollars,
     // Total spending based on a month of data from the previous month
-    pub last_month: f64,
+    pub last_month: Dollars,
     // Total spending based on a year of data ending after the previous month
-    pub yearly_after_last_month: f64,
+    pub yearly_after_last_month: Dollars,
 }
 
 impl Add for Total {
@@ -392,13 +356,6 @@ impl Group {
             per_category.push((i, totals[i]));
         }
 
-        let total_sign = total.yearly_after_last_month.signum();
-        per_category.sort_unstable_by(|lhs, rhs| {
-            let l = lhs.1.yearly_after_last_month * total_sign;
-            let r = rhs.1.yearly_after_last_month * total_sign;
-            r.total_cmp(&l)
-        });
-
         Group {
             total,
             per_category,
@@ -419,20 +376,25 @@ impl Group {
                 config.categories.get_index(*c).unwrap().0.clone(),
                 LastMonthReportRow {
                     subtotal: total.last_month,
-                    percent: total.last_month / self.total.last_month * 100.0,
-                    expected: total.yearly_before_last_month / 12.0,
-                    deviation: (total.last_month * 12.0 / total.yearly_before_last_month - 1.0)
+                    percent: total.last_month.to_f64() / self.total.last_month.to_f64() * 100.0,
+                    expected: Dollars::from_f64(total.yearly_before_last_month.to_f64() / 12.0),
+                    deviation: (total.last_month.to_f64() * 12.0
+                        / total.yearly_before_last_month.to_f64()
+                        - 1.0)
                         * 100.0,
                 },
             );
         }
+        categories.sort_by_key(|_, row| -row.subtotal.to_cents().abs());
+
         LastMonthReport {
             categories,
             total: LastMonthReportRow {
                 subtotal: self.total.last_month,
                 percent: 100.0,
-                expected: self.total.yearly_before_last_month / 12.0,
-                deviation: (self.total.last_month * 12.0 / self.total.yearly_before_last_month
+                expected: Dollars::from_f64(self.total.yearly_before_last_month.to_f64() / 12.0),
+                deviation: (self.total.last_month.to_f64() * 12.0
+                    / self.total.yearly_before_last_month.to_f64()
                     - 1.0)
                     * 100.0,
             },
@@ -445,22 +407,28 @@ impl Group {
             categories.insert(
                 config.categories.get_index(*c).unwrap().0.clone(),
                 AverageMonthReportRow {
-                    subtotal: total.yearly_after_last_month / 12.0,
-                    percent: total.yearly_after_last_month / self.total.yearly_after_last_month
+                    subtotal: Dollars::from_f64(total.yearly_after_last_month.to_f64() / 12.0),
+                    percent: total.yearly_after_last_month.to_f64()
+                        / self.total.yearly_after_last_month.to_f64()
                         * 100.0,
-                    previous: total.yearly_before_last_month / 12.0,
-                    change: (total.yearly_after_last_month / total.yearly_before_last_month - 1.0)
+                    previous: Dollars::from_f64(total.yearly_before_last_month.to_f64() / 12.0),
+                    change: (total.yearly_after_last_month.to_f64()
+                        / total.yearly_before_last_month.to_f64()
+                        - 1.0)
                         * 100.0,
                 },
             );
         }
+        categories.sort_by_key(|_, row| -row.subtotal.to_cents().abs());
+
         AverageMonthReport {
             categories,
             total: AverageMonthReportRow {
-                subtotal: self.total.yearly_after_last_month / 12.0,
+                subtotal: Dollars::from_f64(self.total.yearly_after_last_month.to_f64() / 12.0),
                 percent: 100.0,
-                previous: self.total.yearly_before_last_month / 12.0,
-                change: (self.total.yearly_after_last_month / self.total.yearly_before_last_month
+                previous: Dollars::from_f64(self.total.yearly_before_last_month.to_f64() / 12.0),
+                change: (self.total.yearly_after_last_month.to_f64()
+                    / self.total.yearly_before_last_month.to_f64()
                     - 1.0)
                     * 100.0,
             },
