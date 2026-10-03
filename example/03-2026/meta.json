@@ -1,0 +1,15 @@
+{
+    "end_date": "2026-03-31",
+    "investments": {
+        "brokerage": {
+            "beginning": 18732.00,
+            "ending": 19543.00,
+            "deposits": 600.00
+        },
+        "retirement": {
+            "beginning": 26485.00,
+            "ending": 27989.00,
+            "deposits": 1100.60
+        }
+    }
+}

@@ -2,94 +2,114 @@
 
 <title>Finance report</title>
 <style>
-    * {
+    html {
+        font-size: 8pt;
         font-family: monospace;
     }
 
     .container {
-        width: 800px;
+        width: 7.5in;
         margin: 0 auto;
     }
 
+    @media print {
+        .container {
+            width: 100%;
+            margin: 0;
+        }
+    }
+
     h2 {
-        border-bottom: 2px solid black;
-        margin-top: 2em;
+        border-bottom: 1.5pt solid black;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+
+    h3 {
+        margin-top: 1em;
+        margin-bottom: 0.5em;
     }
 
     table {
         width: 100%;
-        border: 2px solid black;
         border-collapse: collapse;
         table-layout: fixed;
+        font-size: 8pt;
     }
 
     th, td {
-        padding: 0.5em 1em 0.5em 1em;
-        border: 1px solid black;
+        padding: 0.25em 1em 0.25em 1em;
         vertical-align: top;
     }
 
-    th {
+    thead {
         text-align: center;
-        border-bottom: 2px solid black;
     }
 
-    td {
-        text-align: right;
+    th:not(:empty) {
+        border: 0.5pt solid black;
+        border-top-width: 1.5pt;
     }
 
-    tr:nth-child(even) {
+    th:first-child {
+        border-left-width: 1.5pt;
+    }
+
+    th:last-child {
+        border-right-width: 1.5pt;
+    }
+
+    tbody {
+        border: 1.5pt solid black;
+    }
+
+    tbody tr:nth-child(even),
+    thead ~ tbody tr:nth-child(odd) {
         background-color: #ddd;
     }
 
-    #period td:nth-child(1),
-    .last-month td:nth-child(1),
-    .average-month td:nth-child(1),
-    #yearly td:nth-child(1),
-    .categorized-transactions td:nth-child(3)
-    {
-        text-align: left;
+    thead ~ tbody tr:nth-child(even) {
+        background-color: inherit;
     }
 
-    .last-month tr:nth-last-child(1) td,
-    .average-month tr:nth-last-child(2) td {
-        border-top: 2px solid black;
+    td {
+        border: 0.5pt solid black;
     }
 
-    .last-month th:nth-child(4),
-    .last-month td:nth-child(4),
-    .average-month th:nth-child(4),
-    .average-month td:nth-child(4) {
-        border-left: 2px solid black;
+    .right {
+        text-align: right;
     }
 
-    .last-month tr:nth-last-child(1) td,
-    .average-month tr:nth-last-child(2) td,
-    .average-month tr:nth-last-child(1) td {
+    .bold {
         font-weight: bold;
     }
 
-    .last-month th:first-child,
-    .average-month th:first-child {
+    tr.divider td {
+        border-top: 1.5pt solid black;
+    }
+
+    col.divider {
+        border-left: 1.5pt solid black;
+    }
+
+    col.category {
         width: 25%;
     }
 
-    #retirement th:first-child {
-        width: 5%;
+    col.apy {
+        width: 10%;
     }
 
-    #retirement th:nth-child(2) {
-        width: 25%;
-    }
-
-    .categorized-transactions td:first-child,
-    .categorized-transactions td:nth-child(2) {
-        width: 12%;
-    }
-
-    #period th:not(:first-child),
-    #yearly th:not(:first-child) {
+    col.date {
         width: 20%;
+    }
+
+    col.time-until {
+        width: 15%;
+    }
+
+    col.description {
+        width: 65%;
     }
 </style>
 
@@ -101,102 +121,180 @@
 <h1>Finance report</h1>
 
 <table id="period">
-    <tr>
-        <th></th>
-        <th>Current</th>
-        <th>Previous</th>
-    </tr>
-    <tr>
-        <td>Start date</td>
-        <td>{{ report.period_start }}</td>
-        <td>{{ report.prev_period_start }}</td>
-    </tr>
-    <tr>
-        <td>End date</td>
-        <td>{{ report.period_end }}</td>
-        <td>{{ report.prev_period_end }}</td>
-    </tr>
+    <col />
+    <col class="date divider" />
+    <col class="date divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th>Current</th>
+            <th>Previous</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Start date</td>
+            <td class="right">{{ report.period_start | date }}</td>
+            <td class="right">{{ report.prev_period_start | date }}</td>
+        </tr>
+        <tr>
+            <td>End date</td>
+            <td class="right">{{ report.period_end | date }}</td>
+            <td class="right">{{ report.prev_period_end | date }}</td>
+        </tr>
+    </tbody>
 </table>
 
 <h2>Yearly summary</h2>
 
 <table id="yearly">
-    <tr>
-        <th></th>
-        <th>Current</th>
-        <th>Previous</th>
-    </tr>
-    <tr>
-        <td>Total income</td>
-        <td>{{ report.yearly.total_income }}</td>
-        <td>{{ report.prev_yearly.total_income }}</td>
-    </tr>
-    <tr>
-        <td>Total spending</td>
-        <td>{{ report.yearly.total_spending }}</td>
-        <td>{{ report.prev_yearly.total_spending }}</td>
-    </tr>
-    <tr>
-        <td>Net savings</td>
-        <td>{{ report.yearly.net_savings }}</td>
-        <td>{{ report.prev_yearly.net_savings }}</td>
-    </tr>
-    <tr>
-        <td>Net savings per month</td>
-        <td>{{ report.yearly.net_savings_per_month }}</td>
-        <td>{{ report.prev_yearly.net_savings_per_month }}</td>
-    </tr>
-    <tr>
-        <td>Spending-to-income ratio (average 80%)</td>
-        <td>{{ report.yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
-        <td>{{ report.prev_yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
-    </tr>
-    <tr>
-        <td>Individual-to-shared ratio (average 60%)</td>
-        <td>{{ report.yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
-        <td>{{ report.prev_yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
-    </tr>
+    <col />
+    <col class="date divider" />
+    <col class="date divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th>Current</th>
+            <th>Previous</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Total income</td>
+            <td class="right">{{ report.yearly.total_income }}</td>
+            <td class="right">{{ report.prev_yearly.total_income }}</td>
+        </tr>
+        <tr>
+            <td>Total spending</td>
+            <td class="right">{{ report.yearly.total_spending }}</td>
+            <td class="right">{{ report.prev_yearly.total_spending }}</td>
+        </tr>
+        <tr>
+            <td>Net savings</td>
+            <td class="right">{{ report.yearly.net_savings }}</td>
+            <td class="right">{{ report.prev_yearly.net_savings }}</td>
+        </tr>
+        <tr>
+            <td>Net savings per month</td>
+            <td class="right">{{ report.yearly.net_savings_per_month }}</td>
+            <td class="right">{{ report.prev_yearly.net_savings_per_month }}</td>
+        </tr>
+        <tr>
+            <td>Spending-to-income ratio (average 80%)</td>
+            <td class="right">{{ report.yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
+            <td class="right">{{ report.prev_yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
+        </tr>
+        <tr>
+            <td>Individual-to-shared ratio (average 60%)</td>
+            <td class="right">{{ report.yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
+            <td class="right">{{ report.prev_yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
+        </tr>
+    </tbody>
 </table>
 
 <h2>Income</h2>
 
-{{ GroupTemplate { report: report.income } | safe }}
+{{ GroupTemplate { group: report.income } | safe }}
 
 <h2>Shared expenses</h2>
 
-{{ GroupTemplate { report: report.shared_expenses } | safe }}
+{{ GroupTemplate { group: report.shared_expenses } | safe }}
 
 <h2>Individual expenses</h2>
 
-{{ GroupTemplate { report: report.individual_expenses } | safe }}
+{{ GroupTemplate { group: report.individual_expenses } | safe }}
 
-<h2>Retirement calculator</h2>
+<h2>Investments</h2>
+
+<h3>Account balances</h3>
+
+<table id="balances">
+    <col />
+    <col class="divider" />
+    <col />
+    <col class="divider" />
+    <col class="divider" />
+    <col />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Balances</th>
+            <th></th>
+            <th colspan="2">Returns</th>
+        </tr>
+        <tr>
+            <th>Account</th>
+            <th>Beginning</th>
+            <th>Ending</th>
+            <th>Deposits</th>
+            <th>Total</th>
+            <th>Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Brokerage</td>
+            <td class="right">{{ report.investments.accounts.brokerage.beginning }}</td>
+            <td class="right">{{ report.investments.accounts.brokerage.ending }}</td>
+            <td class="right">{{ report.investments.accounts.brokerage.deposits }}</td>
+            <td class="right">{{ report.investments.accounts.brokerage.return_total }}</td>
+            <td class="right">{{ report.investments.accounts.brokerage.return_rate | fmt("{:.2}") }}%</td>
+        </tr>
+        <tr>
+            <td>Retirement</td>
+            <td class="right">{{ report.investments.accounts.retirement.beginning }}</td>
+            <td class="right">{{ report.investments.accounts.retirement.ending }}</td>
+            <td class="right">{{ report.investments.accounts.retirement.deposits }}</td>
+            <td class="right">{{ report.investments.accounts.retirement.return_total }}</td>
+            <td class="right">{{ report.investments.accounts.retirement.return_rate | fmt("{:.2}") }}%</td>
+        </tr>
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">{{ report.investments.accounts.total.beginning }}</td>
+            <td class="right">{{ report.investments.accounts.total.ending }}</td>
+            <td class="right">{{ report.investments.accounts.total.deposits }}</td>
+            <td class="right">{{ report.investments.accounts.total.return_total }}</td>
+            <td class="right">{{ report.investments.accounts.total.return_rate | fmt("{:.2}") }}%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Retirement projections</h3>
 
 <table id="retirement">
-    <tr>
-        <th></th>
-        <th></th>
-        <th colspan="2">Brokerage only</th>
-        <th colspan="2">All investments</th>
-    </tr>
-    <tr>
-        <th>APY</th>
-        <th>Total needed</th>
-        <th>Date</th>
-        <th>Years</th>
-        <th>Date</th>
-        <th>Years</th>
-    </tr>
-    {% for projection in report.retirement.projections %}
-    <tr>
-        <td>{{ projection.percent_apy }}%</td>
-        <td>{{ projection.total_needed }}</td>
-        <td>{{ projection.brokerage_only.date }}</td>
-        <td>{{ projection.brokerage_only.years_away | fmt("{:.2}") }}</td>
-        <td>{{ projection.all_investments.date }}</td>
-        <td>{{ projection.all_investments.years_away | fmt("{:.2}") }}</td>
-    </tr>
-    {% endfor %}
+    <col class="apy" />
+    <col class="divider" />
+    <col class="date divider" />
+    <col class="time-until" />
+    <col class="date divider" />
+    <col class="time-until" />
+    <thead>
+        <tr>
+            <th colspan="2"></th>
+            <th colspan="2">Brokerage only</th>
+            <th colspan="2">All investments</th>
+        </tr>
+        <tr>
+            <th>APY</th>
+            <th>Total needed</th>
+            <th>Date</th>
+            <th>Time until</th>
+            <th>Date</th>
+            <th>Time until</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for projection in report.investments.retirement_projections %}
+        <tr>
+            <td class="right">{{ projection.percent_apy }}%</td>
+            <td class="right">{{ projection.total_needed }}</td>
+            <td class="right">{{ projection.brokerage_only.date | date }}</td>
+            <td class="right">{{ projection.brokerage_only.time_until | duration }}</td>
+            <td class="right">{{ projection.all_investments.date | date }}</td>
+            <td class="right">{{ projection.all_investments.time_until | duration }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 <h2>Transactions</h2>
@@ -205,13 +303,18 @@
 <h3>{{ categorized_transactions.name }}</h3>
 
 <table class="categorized-transactions">
-    {% for transaction in categorized_transactions.transactions %}
-    <tr>
-        <td>{{ transaction.amount }}</td>
-        <td>{{ transaction.date }}</td>
-        <td>{{ transaction.description }}</td>
-    </tr>
-    {% endfor %}
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        {% for transaction in categorized_transactions.transactions %}
+        <tr>
+            <td class="right">{{ transaction.amount }}</td>
+            <td class="right">{{ transaction.date | date }}</td>
+            <td>{{ transaction.description }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% endfor %}
 

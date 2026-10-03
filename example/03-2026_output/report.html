@@ -1,0 +1,1191 @@
+<head>
+
+<title>Finance report</title>
+<style>
+    html {
+        font-size: 8pt;
+        font-family: monospace;
+    }
+
+    .container {
+        width: 7.5in;
+        margin: 0 auto;
+    }
+
+    @media print {
+        .container {
+            width: 100%;
+            margin: 0;
+        }
+    }
+
+    h2 {
+        border-bottom: 1.5pt solid black;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+
+    h3 {
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 8pt;
+    }
+
+    th, td {
+        padding: 0.25em 1em 0.25em 1em;
+        vertical-align: top;
+    }
+
+    thead {
+        text-align: center;
+    }
+
+    th:not(:empty) {
+        border: 0.5pt solid black;
+        border-top-width: 1.5pt;
+    }
+
+    th:first-child {
+        border-left-width: 1.5pt;
+    }
+
+    th:last-child {
+        border-right-width: 1.5pt;
+    }
+
+    tbody {
+        border: 1.5pt solid black;
+    }
+
+    tbody tr:nth-child(even),
+    thead ~ tbody tr:nth-child(odd) {
+        background-color: #ddd;
+    }
+
+    thead ~ tbody tr:nth-child(even) {
+        background-color: inherit;
+    }
+
+    td {
+        border: 0.5pt solid black;
+    }
+
+    .right {
+        text-align: right;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
+    tr.divider td {
+        border-top: 1.5pt solid black;
+    }
+
+    col.divider {
+        border-left: 1.5pt solid black;
+    }
+
+    col.category {
+        width: 25%;
+    }
+
+    col.apy {
+        width: 10%;
+    }
+
+    col.date {
+        width: 20%;
+    }
+
+    col.time-until {
+        width: 15%;
+    }
+
+    col.description {
+        width: 65%;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h1>Finance report</h1>
+
+<table id="period">
+    <col />
+    <col class="date divider" />
+    <col class="date divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th>Current</th>
+            <th>Previous</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Start date</td>
+            <td class="right">March 31, 2025</td>
+            <td class="right">February 28, 2025</td>
+        </tr>
+        <tr>
+            <td>End date</td>
+            <td class="right">March 31, 2026</td>
+            <td class="right">February 28, 2026</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Yearly summary</h2>
+
+<table id="yearly">
+    <col />
+    <col class="date divider" />
+    <col class="date divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th>Current</th>
+            <th>Previous</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Total income</td>
+            <td class="right">$67,537.10</td>
+            <td class="right">$67,470.00</td>
+        </tr>
+        <tr>
+            <td>Total spending</td>
+            <td class="right">-$43,431.00</td>
+            <td class="right">-$43,069.00</td>
+        </tr>
+        <tr>
+            <td>Net savings</td>
+            <td class="right">$24,106.10</td>
+            <td class="right">$24,401.00</td>
+        </tr>
+        <tr>
+            <td>Net savings per month</td>
+            <td class="right">$2,008.84</td>
+            <td class="right">$2,033.42</td>
+        </tr>
+        <tr>
+            <td>Spending-to-income ratio (average 80%)</td>
+            <td class="right">64.31%</td>
+            <td class="right">63.83%</td>
+        </tr>
+        <tr>
+            <td>Individual-to-shared ratio (average 60%)</td>
+            <td class="right">33.65%</td>
+            <td class="right">33.12%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Income</h2>
+
+<h3>Last month vs. Previous average</h3>
+
+<table class="last-month">
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Last month</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Deviation</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td>Wages</td>
+            <td class="right">$4,550.00</td>
+            <td class="right">79.59%</td>
+            <td class="right">$4,508.33</td>
+            <td class="right">80.18%</td>
+            <td class="right">+0.92%</td>
+        </tr>
+        
+        <tr>
+            <td>Stock</td>
+            <td class="right">$1,034.00</td>
+            <td class="right">18.09%</td>
+            <td class="right">$1,000.00</td>
+            <td class="right">17.79%</td>
+            <td class="right">+3.40%</td>
+        </tr>
+        
+        <tr>
+            <td>Interest</td>
+            <td class="right">$103.10</td>
+            <td class="right">1.80%</td>
+            <td class="right">$100.00</td>
+            <td class="right">1.78%</td>
+            <td class="right">+3.10%</td>
+        </tr>
+        
+        <tr>
+            <td>Miscellaneous (income)</td>
+            <td class="right">$30.00</td>
+            <td class="right">0.52%</td>
+            <td class="right">$5.83</td>
+            <td class="right">0.10%</td>
+            <td class="right">+414.29%</td>
+        </tr>
+        
+        <tr>
+            <td>Income tax</td>
+            <td class="right">$0.00</td>
+            <td class="right">0.00%</td>
+            <td class="right">-$8.33</td>
+            <td class="right">-0.15%</td>
+            <td class="right">-100.00%</td>
+        </tr>
+        
+        <tr>
+            <td>Income tax refund</td>
+            <td class="right">$0.00</td>
+            <td class="right">0.00%</td>
+            <td class="right">$16.67</td>
+            <td class="right">0.30%</td>
+            <td class="right">-100.00%</td>
+        </tr>
+        
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">$5,717.10</td>
+            <td class="right">100.00%</td>
+            <td class="right">$5,622.50</td>
+            <td class="right">100.00%</td>
+            <td class="right">+1.68%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>New average vs. Previous average</h3>
+
+<table class="average-month">
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">New average</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Change</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td>Wages</td>
+            <td class="right">$4,512.50</td>
+            <td class="right">80.18%</td>
+            <td class="right">$4,508.33</td>
+            <td class="right">80.18%</td>
+            <td class="right">+0.09%</td>
+        </tr>
+        
+        <tr>
+            <td>Stock</td>
+            <td class="right">$1,002.83</td>
+            <td class="right">17.82%</td>
+            <td class="right">$1,000.00</td>
+            <td class="right">17.79%</td>
+            <td class="right">+0.28%</td>
+        </tr>
+        
+        <tr>
+            <td>Interest</td>
+            <td class="right">$100.26</td>
+            <td class="right">1.78%</td>
+            <td class="right">$100.00</td>
+            <td class="right">1.78%</td>
+            <td class="right">+0.26%</td>
+        </tr>
+        
+        <tr>
+            <td>Miscellaneous (income)</td>
+            <td class="right">$4.17</td>
+            <td class="right">0.07%</td>
+            <td class="right">$5.83</td>
+            <td class="right">0.10%</td>
+            <td class="right">-28.57%</td>
+        </tr>
+        
+        <tr>
+            <td>Income tax</td>
+            <td class="right">-$8.33</td>
+            <td class="right">-0.15%</td>
+            <td class="right">-$8.33</td>
+            <td class="right">-0.15%</td>
+            <td class="right">+0.00%</td>
+        </tr>
+        
+        <tr>
+            <td>Income tax refund</td>
+            <td class="right">$16.67</td>
+            <td class="right">0.30%</td>
+            <td class="right">$16.67</td>
+            <td class="right">0.30%</td>
+            <td class="right">+0.00%</td>
+        </tr>
+        
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">$5,628.09</td>
+            <td class="right">100.00%</td>
+            <td class="right">$5,622.50</td>
+            <td class="right">100.00%</td>
+            <td class="right">+0.10%</td>
+        </tr>
+        <tr class="bold">
+            <td>Total (yearly)</td>
+            <td class="right">$67,537.10</td>
+            <td class="right"></td>
+            <td class="right">$67,470.00</td>
+            <td class="right"></td>
+            <td class="right"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Shared expenses</h2>
+
+<h3>Last month vs. Previous average</h3>
+
+<table class="last-month">
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Last month</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Deviation</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td>Property tax</td>
+            <td class="right">-$1,217.00</td>
+            <td class="right">39.42%</td>
+            <td class="right">-$1,197.00</td>
+            <td class="right">44.40%</td>
+            <td class="right">+1.67%</td>
+        </tr>
+        
+        <tr>
+            <td>Groceries</td>
+            <td class="right">-$800.00</td>
+            <td class="right">25.92%</td>
+            <td class="right">-$775.00</td>
+            <td class="right">28.74%</td>
+            <td class="right">+3.23%</td>
+        </tr>
+        
+        <tr>
+            <td>Utilities</td>
+            <td class="right">-$490.00</td>
+            <td class="right">15.87%</td>
+            <td class="right">-$275.00</td>
+            <td class="right">10.20%</td>
+            <td class="right">+78.18%</td>
+        </tr>
+        
+        <tr>
+            <td>Insurance</td>
+            <td class="right">-$360.00</td>
+            <td class="right">11.66%</td>
+            <td class="right">-$340.00</td>
+            <td class="right">12.61%</td>
+            <td class="right">+5.88%</td>
+        </tr>
+        
+        <tr>
+            <td>Car</td>
+            <td class="right">-$120.00</td>
+            <td class="right">3.89%</td>
+            <td class="right">-$10.00</td>
+            <td class="right">0.37%</td>
+            <td class="right">+1100.00%</td>
+        </tr>
+        
+        <tr>
+            <td>Pet</td>
+            <td class="right">-$80.00</td>
+            <td class="right">2.59%</td>
+            <td class="right">-$67.50</td>
+            <td class="right">2.50%</td>
+            <td class="right">+18.52%</td>
+        </tr>
+        
+        <tr>
+            <td>Home</td>
+            <td class="right">-$20.00</td>
+            <td class="right">0.65%</td>
+            <td class="right">-$31.67</td>
+            <td class="right">1.17%</td>
+            <td class="right">-36.84%</td>
+        </tr>
+        
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">-$3,087.00</td>
+            <td class="right">100.00%</td>
+            <td class="right">-$2,696.17</td>
+            <td class="right">100.00%</td>
+            <td class="right">+14.50%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>New average vs. Previous average</h3>
+
+<table class="average-month">
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">New average</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Change</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td>Property tax</td>
+            <td class="right">-$1,198.83</td>
+            <td class="right">44.27%</td>
+            <td class="right">-$1,197.00</td>
+            <td class="right">44.40%</td>
+            <td class="right">+0.15%</td>
+        </tr>
+        
+        <tr>
+            <td>Groceries</td>
+            <td class="right">-$783.33</td>
+            <td class="right">28.93%</td>
+            <td class="right">-$775.00</td>
+            <td class="right">28.74%</td>
+            <td class="right">+1.08%</td>
+        </tr>
+        
+        <tr>
+            <td>Utilities</td>
+            <td class="right">-$278.33</td>
+            <td class="right">10.28%</td>
+            <td class="right">-$275.00</td>
+            <td class="right">10.20%</td>
+            <td class="right">+1.21%</td>
+        </tr>
+        
+        <tr>
+            <td>Insurance</td>
+            <td class="right">-$341.67</td>
+            <td class="right">12.62%</td>
+            <td class="right">-$340.00</td>
+            <td class="right">12.61%</td>
+            <td class="right">+0.49%</td>
+        </tr>
+        
+        <tr>
+            <td>Car</td>
+            <td class="right">-$10.00</td>
+            <td class="right">0.37%</td>
+            <td class="right">-$10.00</td>
+            <td class="right">0.37%</td>
+            <td class="right">+0.00%</td>
+        </tr>
+        
+        <tr>
+            <td>Pet</td>
+            <td class="right">-$69.17</td>
+            <td class="right">2.55%</td>
+            <td class="right">-$67.50</td>
+            <td class="right">2.50%</td>
+            <td class="right">+2.47%</td>
+        </tr>
+        
+        <tr>
+            <td>Home</td>
+            <td class="right">-$26.67</td>
+            <td class="right">0.98%</td>
+            <td class="right">-$31.67</td>
+            <td class="right">1.17%</td>
+            <td class="right">-15.79%</td>
+        </tr>
+        
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">-$2,708.00</td>
+            <td class="right">100.00%</td>
+            <td class="right">-$2,696.17</td>
+            <td class="right">100.00%</td>
+            <td class="right">+0.44%</td>
+        </tr>
+        <tr class="bold">
+            <td>Total (yearly)</td>
+            <td class="right">-$32,496.00</td>
+            <td class="right"></td>
+            <td class="right">-$32,354.00</td>
+            <td class="right"></td>
+            <td class="right"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Individual expenses</h2>
+
+<h3>Last month vs. Previous average</h3>
+
+<table class="last-month">
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Last month</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Deviation</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td>Miscellaneous (spending)</td>
+            <td class="right">-$450.00</td>
+            <td class="right">40.54%</td>
+            <td class="right">-$372.08</td>
+            <td class="right">41.67%</td>
+            <td class="right">+20.94%</td>
+        </tr>
+        
+        <tr>
+            <td>Travel</td>
+            <td class="right">-$300.00</td>
+            <td class="right">27.03%</td>
+            <td class="right">-$204.17</td>
+            <td class="right">22.87%</td>
+            <td class="right">+46.94%</td>
+        </tr>
+        
+        <tr>
+            <td>Restaurants</td>
+            <td class="right">-$220.00</td>
+            <td class="right">19.82%</td>
+            <td class="right">-$185.00</td>
+            <td class="right">20.72%</td>
+            <td class="right">+18.92%</td>
+        </tr>
+        
+        <tr>
+            <td>Entertainment</td>
+            <td class="right">-$140.00</td>
+            <td class="right">12.61%</td>
+            <td class="right">-$131.67</td>
+            <td class="right">14.75%</td>
+            <td class="right">+6.33%</td>
+        </tr>
+        
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">-$1,110.00</td>
+            <td class="right">100.00%</td>
+            <td class="right">-$892.92</td>
+            <td class="right">100.00%</td>
+            <td class="right">+24.31%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>New average vs. Previous average</h3>
+
+<table class="average-month">
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">New average</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Change</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td>Miscellaneous (spending)</td>
+            <td class="right">-$377.92</td>
+            <td class="right">41.47%</td>
+            <td class="right">-$372.08</td>
+            <td class="right">41.67%</td>
+            <td class="right">+1.57%</td>
+        </tr>
+        
+        <tr>
+            <td>Travel</td>
+            <td class="right">-$212.50</td>
+            <td class="right">23.32%</td>
+            <td class="right">-$204.17</td>
+            <td class="right">22.87%</td>
+            <td class="right">+4.08%</td>
+        </tr>
+        
+        <tr>
+            <td>Restaurants</td>
+            <td class="right">-$188.33</td>
+            <td class="right">20.67%</td>
+            <td class="right">-$185.00</td>
+            <td class="right">20.72%</td>
+            <td class="right">+1.80%</td>
+        </tr>
+        
+        <tr>
+            <td>Entertainment</td>
+            <td class="right">-$132.50</td>
+            <td class="right">14.54%</td>
+            <td class="right">-$131.67</td>
+            <td class="right">14.75%</td>
+            <td class="right">+0.63%</td>
+        </tr>
+        
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">-$911.25</td>
+            <td class="right">100.00%</td>
+            <td class="right">-$892.92</td>
+            <td class="right">100.00%</td>
+            <td class="right">+2.05%</td>
+        </tr>
+        <tr class="bold">
+            <td>Total (yearly)</td>
+            <td class="right">-$10,935.00</td>
+            <td class="right"></td>
+            <td class="right">-$10,715.00</td>
+            <td class="right"></td>
+            <td class="right"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Investments</h2>
+
+<h3>Account balances</h3>
+
+<table id="balances">
+    <col />
+    <col class="divider" />
+    <col />
+    <col class="divider" />
+    <col class="divider" />
+    <col />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Balances</th>
+            <th></th>
+            <th colspan="2">Returns</th>
+        </tr>
+        <tr>
+            <th>Account</th>
+            <th>Beginning</th>
+            <th>Ending</th>
+            <th>Deposits</th>
+            <th>Total</th>
+            <th>Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Brokerage</td>
+            <td class="right">$18,732.00</td>
+            <td class="right">$19,543.00</td>
+            <td class="right">$600.00</td>
+            <td class="right">$211.00</td>
+            <td class="right">1.13%</td>
+        </tr>
+        <tr>
+            <td>Retirement</td>
+            <td class="right">$26,485.00</td>
+            <td class="right">$27,989.00</td>
+            <td class="right">$1,100.60</td>
+            <td class="right">$403.40</td>
+            <td class="right">1.52%</td>
+        </tr>
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">$45,217.00</td>
+            <td class="right">$47,532.00</td>
+            <td class="right">$1,700.60</td>
+            <td class="right">$614.40</td>
+            <td class="right">1.36%</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Retirement projections</h3>
+
+<table id="retirement">
+    <col class="apy" />
+    <col class="divider" />
+    <col class="date divider" />
+    <col class="time-until" />
+    <col class="date divider" />
+    <col class="time-until" />
+    <thead>
+        <tr>
+            <th colspan="2"></th>
+            <th colspan="2">Brokerage only</th>
+            <th colspan="2">All investments</th>
+        </tr>
+        <tr>
+            <th>APY</th>
+            <th>Total needed</th>
+            <th>Date</th>
+            <th>Time until</th>
+            <th>Date</th>
+            <th>Time until</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        <tr>
+            <td class="right">4%</td>
+            <td class="right">$1,085,775.00</td>
+            <td class="right">February 2, 2051</td>
+            <td class="right">24y 10m 2d</td>
+            <td class="right">January 4, 2050</td>
+            <td class="right">23y 9m 4d</td>
+        </tr>
+        
+        <tr>
+            <td class="right">5%</td>
+            <td class="right">$868,620.00</td>
+            <td class="right">December 11, 2045</td>
+            <td class="right">19y 8m 11d</td>
+            <td class="right">November 18, 2044</td>
+            <td class="right">18y 7m 18d</td>
+        </tr>
+        
+        <tr>
+            <td class="right">6%</td>
+            <td class="right">$723,850.00</td>
+            <td class="right">July 9, 2042</td>
+            <td class="right">16y 3m 9d</td>
+            <td class="right">June 22, 2041</td>
+            <td class="right">15y 2m 22d</td>
+        </tr>
+        
+        <tr>
+            <td class="right">7%</td>
+            <td class="right">$620,442.86</td>
+            <td class="right">January 27, 2040</td>
+            <td class="right">13y 9m 27d</td>
+            <td class="right">January 16, 2039</td>
+            <td class="right">12y 9m 16d</td>
+        </tr>
+        
+        <tr>
+            <td class="right">8%</td>
+            <td class="right">$542,887.50</td>
+            <td class="right">March 28, 2038</td>
+            <td class="right">11y 11m 28d</td>
+            <td class="right">March 23, 2037</td>
+            <td class="right">10y 11m 23d</td>
+        </tr>
+        
+        <tr>
+            <td class="right">9%</td>
+            <td class="right">$482,566.67</td>
+            <td class="right">October 24, 2036</td>
+            <td class="right">10y 6m 24d</td>
+            <td class="right">October 25, 2035</td>
+            <td class="right">9y 6m 25d</td>
+        </tr>
+        
+        <tr>
+            <td class="right">10%</td>
+            <td class="right">$434,310.00</td>
+            <td class="right">September 4, 2035</td>
+            <td class="right">9y 5m 4d</td>
+            <td class="right">September 10, 2034</td>
+            <td class="right">8y 5m 10d</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h2>Transactions</h2>
+
+
+<h3>Wages</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">$4,550.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Company payroll #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Stock</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">$1,034.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Company stock #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Interest</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">$103.10</td>
+            <td class="right">March 1, 2026</td>
+            <td>Interest paid #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Miscellaneous (income)</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">$30.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Check deposit #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Property tax</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$590.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>County tax #3</td>
+        </tr>
+        
+        <tr>
+            <td class="right">-$627.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>School tax #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Utilities</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$490.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Water and sewer #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Insurance</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$195.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Car insurance #3</td>
+        </tr>
+        
+        <tr>
+            <td class="right">-$165.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Home insurance #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Home</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$20.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Hardware store #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Car</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$120.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Department of motor vehicles #2</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Groceries</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$800.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Grocery store 3 #1</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Pet</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$80.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Pet store #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Entertainment</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$35.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Streaming service #3</td>
+        </tr>
+        
+        <tr>
+            <td class="right">-$105.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Music store #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Restaurants</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$220.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>American restaurant #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Miscellaneous (spending)</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$350.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>General store #3</td>
+        </tr>
+        
+        <tr>
+            <td class="right">-$100.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Local bar #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+<h3>Travel</h3>
+
+<table class="categorized-transactions">
+    <col />
+    <col class="date" />
+    <col class="description" />
+    <tbody>
+        
+        <tr>
+            <td class="right">-$300.00</td>
+            <td class="right">March 1, 2026</td>
+            <td>Gas station #3</td>
+        </tr>
+        
+    </tbody>
+</table>
+
+
+</div>
+
+</body>

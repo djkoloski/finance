@@ -1,21 +1,17 @@
-use core::str::FromStr as _;
-use std::{fs::File, io::BufReader, path::Path};
+use std::{collections::HashSet, fs::File, io::BufReader, path::Path};
 
-use anyhow::Result;
+use anyhow::{Result, bail};
 use indexmap::IndexMap;
 use regex::RegexSet;
 use serde::{Deserialize, Deserializer, de};
-use temporal_rs::PlainDate;
 
 #[derive(Deserialize)]
 pub struct Config {
-    #[serde(deserialize_with = "date_string")]
-    pub end_date: PlainDate,
     pub accounts: Vec<AccountConfig>,
-    pub investments: InvestmentsConfig,
     pub income: GroupConfig,
     pub shared_expenses: GroupConfig,
     pub individual_expenses: GroupConfig,
+    pub internal: GroupConfig,
     pub categories: IndexMap<String, CategoryConfig>,
 }
 
@@ -23,7 +19,35 @@ impl Config {
     pub fn read(path: &Path) -> Result<Self> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
-        Ok(serde_json::from_reader(reader)?)
+        let result = serde_json::from_reader::<_, Self>(reader)?;
+
+        result.check()?;
+
+        Ok(result)
+    }
+
+    fn check(&self) -> Result<()> {
+        let mut categories_in_groups = HashSet::new();
+        for group in [
+            &self.income,
+            &self.shared_expenses,
+            &self.individual_expenses,
+            &self.internal,
+        ] {
+            for include in group.include.iter() {
+                if !categories_in_groups.insert(include) {
+                    bail!("category '{include}' included in multiple groups");
+                }
+            }
+        }
+
+        for category in self.categories.keys() {
+            if !categories_in_groups.contains(category) {
+                bail!("category '{category}' not included in any groups");
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -35,12 +59,6 @@ pub struct AccountConfig {
 }
 
 #[derive(Deserialize)]
-pub struct InvestmentsConfig {
-    pub brokerage: f64,
-    pub retirement: f64,
-}
-
-#[derive(Deserialize)]
 pub struct GroupConfig {
     pub include: Vec<String>,
 }
@@ -49,14 +67,6 @@ pub struct GroupConfig {
 pub struct CategoryConfig {
     #[serde(deserialize_with = "compile_matchers")]
     pub matchers: RegexSet,
-}
-
-fn date_string<'de, D>(deserializer: D) -> Result<PlainDate, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let s = <String as Deserialize>::deserialize(deserializer)?;
-    PlainDate::from_str(&s).map_err(de::Error::custom)
 }
 
 fn compile_matchers<'de, D>(deserializer: D) -> Result<RegexSet, D::Error>

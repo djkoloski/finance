@@ -1,6 +1,6 @@
 use indexmap::IndexMap;
 use serde::{Serialize, Serializer};
-use temporal_rs::PlainDate;
+use temporal_rs::{Duration, PlainDate};
 
 use crate::dollars::Dollars;
 
@@ -22,44 +22,28 @@ pub struct Report {
     pub shared_expenses: GroupReport,
     pub individual_expenses: GroupReport,
 
-    pub retirement: RetirementReport,
+    pub investments: InvestmentsReport,
     pub categorized_transactions: Vec<CategorizedTransactions>,
 }
 
 #[derive(Serialize)]
 pub struct GroupReport {
-    pub last_month: LastMonthReport,
-    pub average_month: AverageMonthReport,
-}
-
-#[derive(Serialize)]
-pub struct LastMonthReport {
-    pub categories: IndexMap<String, LastMonthReportRow>,
-    pub total: LastMonthReportRow,
-}
-
-#[derive(Serialize)]
-pub struct LastMonthReportRow {
-    pub subtotal: Dollars,
-    pub percent: f64,
-    pub expected: Dollars,
-    pub deviation: f64,
-}
-
-#[derive(Serialize)]
-pub struct AverageMonthReport {
-    pub categories: IndexMap<String, AverageMonthReportRow>,
-    pub total: AverageMonthReportRow,
+    pub categories: IndexMap<String, GroupReportRow>,
+    pub total: GroupReportRow,
     pub yearly_subtotal: Dollars,
-    pub prev_yearly_subtotal: Dollars,
+    pub p_yearly_subtotal: Dollars,
 }
 
 #[derive(Serialize)]
-pub struct AverageMonthReportRow {
-    pub subtotal: Dollars,
-    pub percent: f64,
-    pub previous: Dollars,
-    pub change: f64,
+pub struct GroupReportRow {
+    pub last_subtotal: Dollars,
+    pub last_percent: f64,
+    pub avg_subtotal: Dollars,
+    pub avg_percent: f64,
+    pub p_avg_subtotal: Dollars,
+    pub p_avg_percent: f64,
+    pub dev_last_from_p_avg: f64,
+    pub dev_avg_from_p_avg: f64,
 }
 
 #[derive(Serialize)]
@@ -73,8 +57,9 @@ pub struct YearlyReport {
 }
 
 #[derive(Serialize)]
-pub struct RetirementReport {
-    pub projections: Vec<RetirementProjection>,
+pub struct InvestmentsReport {
+    pub retirement_projections: Vec<RetirementProjection>,
+    pub accounts: InvestmentAccountsReport,
 }
 
 #[derive(Serialize)]
@@ -89,7 +74,24 @@ pub struct RetirementProjection {
 pub struct RetirementDate {
     #[serde(serialize_with = "string_date")]
     pub date: PlainDate,
-    pub years_away: f64,
+    #[serde(serialize_with = "string_duration")]
+    pub time_until: Duration,
+}
+
+#[derive(Serialize)]
+pub struct InvestmentAccountsReport {
+    pub brokerage: InvestmentAccountReport,
+    pub retirement: InvestmentAccountReport,
+    pub total: InvestmentAccountReport,
+}
+
+#[derive(Serialize)]
+pub struct InvestmentAccountReport {
+    pub beginning: Dollars,
+    pub ending: Dollars,
+    pub deposits: Dollars,
+    pub return_total: Dollars,
+    pub return_rate: f64,
 }
 
 #[derive(Serialize)]
@@ -111,5 +113,13 @@ where
     S: Serializer,
 {
     let s = format!("{date}");
+    serializer.serialize_str(&s)
+}
+
+fn string_duration<S>(duration: &Duration, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let s = format!("{duration}");
     serializer.serialize_str(&s)
 }

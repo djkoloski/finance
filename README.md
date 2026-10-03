@@ -10,9 +10,11 @@ retire comfortably.
 
 ## Example output
 
-![summary](https://github.com/djkoloski/finance/raw/main/examples/summary.png "Summary example")
-![income](https://github.com/djkoloski/finance/raw/main/examples/income.png "Income example")
-![retirement](https://github.com/djkoloski/finance/raw/main/examples/retirement.png "Retirement example")
+![summary](https://github.com/djkoloski/finance/raw/main/example/03-2026_output/summary.png "Summary example")
+![income](https://github.com/djkoloski/finance/raw/main/example/03-2026_output/income.png "Income example")
+![investments](https://github.com/djkoloski/finance/raw/main/example/03-2026_output/investments.png "Investments example")
+
+See the [sample PDF](https://github.com/djkoloski/finance/raw/main/example/03-2026_output/report.pdf) for an example of rendered output.
 
 ## Features
 
@@ -26,7 +28,8 @@ Generated financial reports include:
   expected income and spend based on the year prior to last month.
 - Change calculation for observing how your monthly budgeting changed from the
   last month of transactions.
-- Retirement calculation given your current savings rate, and broken down for
+- Investments tracking and rate-of-return calculation.
+- Retirement projection given your current savings rate, and broken down for
   anywhere from 4-10% APY. Separately reports retirement based on brokerage-only
   investments (which should not include 401ks or other age-restricted investment
   vehicles), versus all investments (which include them).
@@ -35,20 +38,26 @@ Generated financial reports include:
 ## Usage
 
 ```
-Usage: finance [OPTIONS] [CONFIG]
+$ ./finance --help
+
+Finance report generator
+
+Usage: finance [OPTIONS] <DATA_NAME>
 
 Arguments:
-  [CONFIG]
+  <DATA_NAME>
+          The name of the data directory adjacent to the configuration file
+
+Options:
+  -c, --config <CONFIG>
           The path to the configuration file
           
           [default: data/config.json]
 
-Options:
   -f, --format <FORMAT>
           The output format
 
           Possible values:
-          - text: Text formatting
           - json: JSON formatting
           - html: HTML formatting
           
@@ -66,21 +75,25 @@ Options:
 
 ## How to generate a report
 
+See the `example` directory for example input and output.
+
 1. Export your account transactions for the past 13+ months as a CSV. Repeat for
    each account to include in the report (e.g. checking, savings, joint). CSV
    rows should be `Date, Time, Amount, Type, Description`, where `Date` is
    formatted `YYYY-MM-DD`, `Time` is formatted `HH:MM:SS`, and `Type` is either
    `"Withdrawal"` or `"Deposit"`.
-2. Create a `config.json` file with your financial information. See
+2. Create a `meta.json` with information about the specific period being
+   reported. See `src/data.rs` for the schema.
+3. Create a `config.json` file with your financial information. See
    `src/config.rs` for the schema. The most important part of the configuration
    is `"categories"`, which defines the transaction categories and provides
    regex matchers for transaction descriptions.
-3. Run the report generator by choosing an output format and destination file.
-   By default, HTML reports will be generated and output to `stdout` if no
-   output file is specified.
+4. Run the report generator by choosing a config file, data directory, output
+   format, and destination file. By default, HTML reports will be generated and
+   output to `stdout` if no output file is specified.
 
 How you choose to categorize transactions is up to you, but the report generator
-has three groups of categories that are essential for some calculations:
+has four groups of categories that are essential for some calculations:
 
 - `income` is any source of income or adjustments to income. Put wages,
   interest, etc in this group.
@@ -91,3 +104,6 @@ has three groups of categories that are essential for some calculations:
 - `individual_expenses` are expenses that you are personally responsible for.
   These are usually discretionary, but should be used for any expenses that are
   not shared with others.
+- `internal` are transactions that should be ignored when calculating income and
+  expenses. For example, internal transfers should be ignored because they are
+  neither income nor expenses.

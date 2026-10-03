@@ -1,0 +1,171 @@
+{
+    "accounts": [
+        {
+            "name": "Spending account",
+            "file": "spending.csv"
+        },
+        {
+            "name": "Savings account",
+            "file": "savings.csv"
+        }
+    ],
+    "income": {
+        "include": [
+            "Wages",
+            "Stock",
+            "Interest",
+            "Miscellaneous (income)",
+            "Income tax",
+            "Income tax refund"
+        ]
+    },
+    "shared_expenses": {
+        "include": [
+            "Property tax",
+            "Utilities",
+            "Insurance",
+            "Home",
+            "Car",
+            "Pet",
+            "Groceries"
+        ]
+    },
+    "individual_expenses": {
+        "include": [
+            "Entertainment",
+            "Restaurants",
+            "Miscellaneous (spending)",
+            "Travel"
+        ]
+    },
+    "internal": {
+        "include": [
+            "Internal transfer",
+            "Investment"
+        ]
+    },
+    "categories": {
+        "Internal transfer": {
+            "matchers": [
+                "Internal transfer .*",
+                "Overdraft Transfer .*"
+            ]
+        },
+        "Wages": {
+            "matchers": [
+                "Company payroll .*"
+            ]
+        },
+        "Stock": {
+            "matchers": [
+                "Company stock .*"
+            ]
+        },
+        "Interest": {
+            "matchers": [
+                "Interest paid .*"
+            ]
+        },
+        "Miscellaneous (income)": {
+            "matchers": [
+                "Check deposit .*"
+            ]
+        },
+        "Income tax refund": {
+            "matchers": [
+                "State tax refund .*",
+                "Federal tax refund .*"
+            ]
+        },
+        "Income tax": {
+            "matchers": [
+                "State tax payment .*",
+                "Federal tax payment .*"
+            ]
+        },
+        "Property tax": {
+            "matchers": [
+                "County tax .*",
+                "School tax .*"
+            ]
+        },
+        "Utilities": {
+            "matchers": [
+                "Water and sewer .*",
+                "Power and natural gas .*",
+                "Internet service .*"
+            ]
+        },
+        "Insurance": {
+            "matchers": [
+                "Car insurance .*",
+                "Home insurance .*"
+            ]
+        },
+        "Investment": {
+            "matchers": [
+                "Investment group .*"
+            ]
+        },
+        "Home": {
+            "matchers": [
+                "Hardware store .*",
+                "HVAC company .*",
+                "Appliance store .*",
+                "Furniture store .*"
+            ]
+        },
+        "Car": {
+            "matchers": [
+                "Car dealership .*",
+                "Department of motor vehicles .*"
+            ]
+        },
+        "Groceries": {
+            "matchers": [
+                "Grocery store 1 .*",
+                "Grocery store 2 .*",
+                "Grocery store 3 .*"
+            ]
+        },
+        "Pet": {
+            "matchers": [
+                "Veterinarian .*",
+                "Pet store .*"
+            ]
+        },
+        "Entertainment": {
+            "matchers": [
+                "Streaming service .*",
+                "Movie theater .*",
+                "Music store .*"
+            ]
+        },
+        "Restaurants": {
+            "matchers": [
+                "American restaurant .*",
+                "Chinese restaurant .*",
+                "Mexican restaurant .*",
+                "Fancy restaurant .*"
+            ]
+        },
+        "Miscellaneous (spending)": {
+            "matchers": [
+                "General store .*",
+                "Book store .*",
+                "Electronics store .*",
+                "Card shop .*",
+                "Local bar .*"
+            ]
+        },
+        "Travel": {
+            "matchers": [
+                "Airline .*",
+                "Public transit .*",
+                "Rideshare .*",
+                "Parking lot .*",
+                "Gas station .*"
+            ]
+        }
+    }
+}

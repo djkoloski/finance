@@ -1,62 +1,101 @@
-<h3>Last month</h3>
+<h3>Last month vs. Previous average</h3>
 
 <table class="last-month">
-    <tr>
-        <th>Category</th>
-        <th>Subtotal</th>
-        <th>Percent</th>
-        <th>Expected</th>
-        <th>Deviation</th>
-    </tr>
-    {% for (name, category) in report.last_month.categories.iter() %}
-    <tr>
-        <td>{{ name }}</td>
-        <td>{{ category.subtotal }}</td>
-        <td>{{ category.percent | fmt("{:.2}")}}%</td>
-        <td>{{ category.expected }}</td>
-        <td>{{ category.deviation | fmt("{:+.2}") }}%</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <td>Total</td>
-        <td>{{ report.last_month.total.subtotal }}</td>
-        <td>{{ report.last_month.total.percent | fmt("{:.2}") }}%</td>
-        <td>{{ report.last_month.total.expected }}</td>
-        <td>{{ report.last_month.total.deviation | fmt("{:+.2}") }}%</td>
-    </tr>
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">Last month</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Deviation</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for (name, category) in group.categories.iter() %}
+        <tr>
+            <td>{{ name }}</td>
+            <td class="right">{{ category.last_subtotal }}</td>
+            <td class="right">{{ category.last_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ category.p_avg_subtotal }}</td>
+            <td class="right">{{ category.p_avg_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ category.dev_last_from_p_avg | fmt("{:+.2}") }}%</td>
+        </tr>
+        {% endfor %}
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">{{ group.total.last_subtotal }}</td>
+            <td class="right">{{ group.total.last_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ group.total.p_avg_subtotal }}</td>
+            <td class="right">{{ group.total.p_avg_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ group.total.dev_last_from_p_avg | fmt("{:+.2}") }}%</td>
+        </tr>
+    </tbody>
 </table>
 
-<h3>Average month</h3>
+<h3>New average vs. Previous average</h3>
 
 <table class="average-month">
-    <tr>
-        <th>Category</th>
-        <th>Subtotal</th>
-        <th>Percent</th>
-        <th>Previous</th>
-        <th>Change</th>
-    </tr>
-    {% for (name, category) in report.average_month.categories.iter() %}
-    <tr>
-        <td>{{ name }}</td>
-        <td>{{ category.subtotal }}</td>
-        <td>{{ category.percent | fmt("{:.2}") }}%</td>
-        <td>{{ category.previous }}</td>
-        <td>{{ category.change | fmt("{:+.2}") }}%</td>
-    </tr>
-    {% endfor %}
-    <tr>
-        <td>Total</td>
-        <td>{{ report.average_month.total.subtotal }}</td>
-        <td>{{ report.average_month.total.percent | fmt("{:.2}") }}%</td>
-        <td>{{ report.average_month.total.previous }}</td>
-        <td>{{ report.average_month.total.change | fmt("{:+.2}") }}%</td>
-    </tr>
-    <tr>
-        <td>Total (yearly)</td>
-        <td>{{ report.average_month.yearly_subtotal }}</td>
-        <td></td>
-        <td>{{ report.average_month.prev_yearly_subtotal }}</td>
-        <td></td>
-    </tr>
+    <col class="category" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="divider" />
+    <col class="percent" />
+    <col class="percent divider" />
+    <thead>
+        <tr>
+            <th></th>
+            <th colspan="2">New average</th>
+            <th colspan="2">Previous average</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th class="thick-border-top">Category</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th>Subtotal</th>
+            <th>Percent</th>
+            <th class="thick-border-top">Change</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for (name, category) in group.categories.iter() %}
+        <tr>
+            <td>{{ name }}</td>
+            <td class="right">{{ category.avg_subtotal }}</td>
+            <td class="right">{{ category.avg_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ category.p_avg_subtotal }}</td>
+            <td class="right">{{ category.p_avg_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ category.dev_avg_from_p_avg | fmt("{:+.2}") }}%</td>
+        </tr>
+        {% endfor %}
+        <tr class="divider bold">
+            <td>Total</td>
+            <td class="right">{{ group.total.avg_subtotal }}</td>
+            <td class="right">{{ group.total.avg_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ group.total.p_avg_subtotal }}</td>
+            <td class="right">{{ group.total.p_avg_percent | fmt("{:.2}") }}%</td>
+            <td class="right">{{ group.total.dev_avg_from_p_avg | fmt("{:+.2}") }}%</td>
+        </tr>
+        <tr class="bold">
+            <td>Total (yearly)</td>
+            <td class="right">{{ group.yearly_subtotal }}</td>
+            <td class="right"></td>
+            <td class="right">{{ group.p_yearly_subtotal }}</td>
+            <td class="right"></td>
+            <td class="right"></td>
+        </tr>
+    </tbody>
 </table>

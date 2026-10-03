@@ -1,0 +1,59 @@
+Date, Time, Amount, Type, Description
+2025-03-01,12:00:00,4500.00,Deposit,Company payroll #1
+2026-02-01,12:00:00,49600.00,Deposit,Company payroll #2
+2026-03-01,12:00:00,4550.00,Deposit,Company payroll #3
+2025-03-01,12:00:00,1000.00,Deposit,Company stock #1
+2026-02-01,12:00:00,11000.00,Deposit,Company stock #2
+2026-03-01,12:00:00,1034.00,Deposit,Company stock #3
+2025-03-01,12:00:00,100.00,Deposit,Interest paid #1
+2026-02-01,12:00:00,1100.00,Deposit,Interest paid #2
+2026-03-01,12:00:00,103.10,Deposit,Interest paid #3
+2025-03-01,12:00:00,50.00,Deposit,Check deposit #1
+2026-02-01,12:00:00,20.00,Deposit,Check deposit #2
+2026-03-01,12:00:00,30.00,Deposit,Check deposit #3
+2025-04-01,12:00:00,-100.00,Withdrawal,State tax payment #1
+2025-04-01,12:00:00,200.00,Deposit,Federal tax refund #1
+2025-03-01,12:00:00,-580.00,Withdrawal,County tax #1
+2026-02-01,12:00:00,-6382.00,Withdrawal,County tax #2
+2026-03-01,12:00:00,-590.00,Withdrawal,County tax #3
+2025-03-01,12:00:00,-615.00,Withdrawal,School tax #1
+2026-02-01,12:00:00,-6787.00,Withdrawal,School tax #2
+2026-03-01,12:00:00,-627.00,Withdrawal,School tax #3
+2025-03-01,12:00:00,-450.00,Withdrawal,Water and sewer #1
+2026-02-01,12:00:00,-2850.00,Withdrawal,Water and sewer #2
+2026-03-01,12:00:00,-490.00,Withdrawal,Water and sewer #3
+2025-03-01,12:00:00,-190.00,Withdrawal,Car insurance #1
+2026-02-01,12:00:00,-2090.00,Withdrawal,Car insurance #2
+2026-03-01,12:00:00,-195.00,Withdrawal,Car insurance #3
+2025-03-01,12:00:00,-150.00,Withdrawal,Home insurance #1
+2026-02-01,12:00:00,-1650.00,Withdrawal,Home insurance #2
+2026-03-01,12:00:00,-165.00,Withdrawal,Home insurance #3
+2025-03-01,12:00:00,-80.00,Withdrawal,Hardware store #1
+2026-02-01,12:00:00,-300.00,Withdrawal,Hardware store #2
+2026-03-01,12:00:00,-20.00,Withdrawal,Hardware store #3
+2025-03-01,12:00:00,-120.00,Withdrawal,Department of motor vehicles #1
+2026-03-01,12:00:00,-120.00,Withdrawal,Department of motor vehicles #2
+2025-03-01,12:00:00,-700.00,Withdrawal,Grocery store 1 #1
+2026-02-01,12:00:00,-8600.00,Withdrawal,Grocery store 2 #1
+2026-03-01,12:00:00,-800.00,Withdrawal,Grocery store 3 #1
+2025-03-01,12:00:00,-60.00,Withdrawal,Pet store #1
+2026-02-01,12:00:00,-750.00,Withdrawal,Pet store #2
+2026-03-01,12:00:00,-80.00,Withdrawal,Pet store #3
+2025-03-01,12:00:00,-30.00,Withdrawal,Streaming service #1
+2026-02-01,12:00:00,-350.00,Withdrawal,Streaming service #2
+2026-03-01,12:00:00,-35.00,Withdrawal,Streaming service #3
+2025-03-01,12:00:00,-100.00,Withdrawal,Music store #1
+2026-02-01,12:00:00,-1100.00,Withdrawal,Music store #2
+2026-03-01,12:00:00,-105.00,Withdrawal,Music store #3
+2025-03-01,12:00:00,-180.00,Withdrawal,American restaurant #1
+2026-02-01,12:00:00,-2040.00,Withdrawal,American restaurant #2
+2026-03-01,12:00:00,-220.00,Withdrawal,American restaurant #3
+2025-03-01,12:00:00,-300.00,Withdrawal,General store #1
+2026-02-01,12:00:00,-3200.00,Withdrawal,General store #2
+2026-03-01,12:00:00,-350.00,Withdrawal,General store #3
+2025-03-01,12:00:00,-80.00,Withdrawal,Local bar #1
+2026-02-01,12:00:00,-885.00,Withdrawal,Local bar #2
+2026-03-01,12:00:00,-100.00,Withdrawal,Local bar #3
+2025-03-01,12:00:00,-200.00,Withdrawal,Gas station #1
+2026-02-01,12:00:00,-2250.00,Withdrawal,Gas station #2
+2026-03-01,12:00:00,-300.00,Withdrawal,Gas station #3
