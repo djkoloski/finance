@@ -6,17 +6,9 @@ use crate::dollars::Dollars;
 
 #[derive(Serialize)]
 pub struct Report {
-    #[serde(serialize_with = "string_date")]
-    pub prev_period_start: PlainDate,
-    #[serde(serialize_with = "string_date")]
-    pub prev_period_end: PlainDate,
-    #[serde(serialize_with = "string_date")]
-    pub period_start: PlainDate,
-    #[serde(serialize_with = "string_date")]
-    pub period_end: PlainDate,
-
     pub yearly: YearlyReport,
     pub prev_yearly: YearlyReport,
+    pub dev_yearly_from_prev_yearly: YearlyDeviation,
 
     pub income: GroupReport,
     pub shared_expenses: GroupReport,
@@ -30,24 +22,48 @@ pub struct Report {
 pub struct GroupReport {
     pub categories: IndexMap<String, GroupReportRow>,
     pub total: GroupReportRow,
-    pub yearly_subtotal: Dollars,
-    pub p_yearly_subtotal: Dollars,
 }
 
 #[derive(Serialize)]
 pub struct GroupReportRow {
     pub last_subtotal: Dollars,
     pub last_percent: f64,
+    pub p_last_subtotal: Dollars,
+    pub p_last_percent: f64,
     pub avg_subtotal: Dollars,
     pub avg_percent: f64,
     pub p_avg_subtotal: Dollars,
     pub p_avg_percent: f64,
-    pub dev_last_from_p_avg: f64,
-    pub dev_avg_from_p_avg: f64,
+    pub dev_last_from_p_last_subtotal: Dollars,
+    pub dev_last_from_p_last_percent: f64,
+    pub dev_last_from_p_avg_subtotal: Dollars,
+    pub dev_last_from_p_avg_percent: f64,
+    pub dev_avg_from_p_avg_subtotal: Dollars,
+    pub dev_avg_from_p_avg_percent: f64,
 }
 
 #[derive(Serialize)]
 pub struct YearlyReport {
+    #[serde(serialize_with = "string_date")]
+    pub period_start: PlainDate,
+    #[serde(serialize_with = "string_date")]
+    pub period_end: PlainDate,
+
+    pub total_income: Dollars,
+    pub total_spending: Dollars,
+    pub net_savings: Dollars,
+    pub net_savings_per_month: Dollars,
+    pub spending_income_ratio: f64,
+    pub individual_shared_ratio: f64,
+}
+
+#[derive(Serialize)]
+pub struct YearlyDeviation {
+    #[serde(serialize_with = "string_duration")]
+    pub period_start: Duration,
+    #[serde(serialize_with = "string_duration")]
+    pub period_end: Duration,
+
     pub total_income: Dollars,
     pub total_spending: Dollars,
     pub net_savings: Dollars,

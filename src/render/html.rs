@@ -26,9 +26,6 @@ mod filters {
 
     #[askama::filter_fn]
     pub fn date(date: &PlainDate, _: &dyn askama::Values) -> askama::Result<String> {
-        // const MONTH_SHORT: [&str; 12] = [
-        //     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        // ];
         const MONTH_LONG: [&str; 12] = [
             "January",
             "February",

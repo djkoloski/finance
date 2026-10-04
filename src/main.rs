@@ -194,22 +194,44 @@ fn generate_report(config: &Config, data: &Data) -> Result<Report> {
         }
     }
 
-    Ok(Report {
-        prev_period_start: prev_start_date,
-        prev_period_end: prev_end_date,
-        period_start: start_date,
-        period_end: end_date,
+    let yearly = report_yearly(
+        start_date,
+        end_date,
+        income.total.yearly_after_last_month,
+        shared_expenses.total.yearly_after_last_month,
+        individual_expenses.total.yearly_after_last_month,
+    );
+    let prev_yearly = report_yearly(
+        prev_start_date,
+        prev_end_date,
+        income.total.yearly_before_last_month,
+        shared_expenses.total.yearly_before_last_month,
+        individual_expenses.total.yearly_before_last_month,
+    );
+    let mut difference = DifferenceSettings::default();
+    difference.largest_unit = Some(Unit::Day);
+    let dev_yearly_from_prev_yearly = YearlyDeviation {
+        period_start: yearly
+            .period_start
+            .since(&prev_yearly.period_start, difference)
+            .unwrap(),
+        period_end: yearly
+            .period_end
+            .since(&prev_yearly.period_end, difference)
+            .unwrap(),
+        total_income: yearly.total_income - prev_yearly.total_income,
+        total_spending: yearly.total_spending - prev_yearly.total_spending,
+        net_savings: yearly.net_savings - prev_yearly.net_savings,
+        net_savings_per_month: yearly.net_savings_per_month - prev_yearly.net_savings_per_month,
+        spending_income_ratio: yearly.spending_income_ratio - prev_yearly.spending_income_ratio,
+        individual_shared_ratio: yearly.individual_shared_ratio
+            - prev_yearly.individual_shared_ratio,
+    };
 
-        yearly: report_yearly(
-            income.total.yearly_after_last_month,
-            shared_expenses.total.yearly_after_last_month,
-            individual_expenses.total.yearly_after_last_month,
-        ),
-        prev_yearly: report_yearly(
-            income.total.yearly_before_last_month,
-            shared_expenses.total.yearly_before_last_month,
-            individual_expenses.total.yearly_before_last_month,
-        ),
+    Ok(Report {
+        yearly,
+        prev_yearly,
+        dev_yearly_from_prev_yearly,
 
         income: income.report(config),
         shared_expenses: shared_expenses.report(config),
@@ -221,6 +243,8 @@ fn generate_report(config: &Config, data: &Data) -> Result<Report> {
 }
 
 fn report_yearly(
+    period_start: PlainDate,
+    period_end: PlainDate,
     income: Dollars,
     shared_expenses: Dollars,
     individual_expenses: Dollars,
@@ -229,6 +253,8 @@ fn report_yearly(
     let net_savings = income + total_spending;
 
     YearlyReport {
+        period_start,
+        period_end,
         total_income: income,
         total_spending,
         net_savings,
@@ -306,6 +332,8 @@ fn total_categories(
 
 #[derive(Clone, Copy, Default)]
 struct Total {
+    // Total spending based on a month of data from the previous month last year
+    pub prev_last_month: Dollars,
     // Total spending based on a year of data ending before the previous month
     pub yearly_before_last_month: Dollars,
     // Total spending based on a month of data from the previous month
@@ -314,11 +342,22 @@ struct Total {
     pub yearly_after_last_month: Dollars,
 }
 
+struct Subtotals {
+    last: Dollars,
+    p_last: Dollars,
+    avg: Dollars,
+    p_avg: Dollars,
+    dev_last_from_p_last: Dollars,
+    dev_last_from_p_avg: Dollars,
+    dev_avg_from_p_avg: Dollars,
+}
+
 impl Add for Total {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
         Self {
+            prev_last_month: self.prev_last_month + rhs.prev_last_month,
             yearly_before_last_month: self.yearly_before_last_month + rhs.yearly_before_last_month,
             last_month: self.last_month + rhs.last_month,
             yearly_after_last_month: self.yearly_after_last_month + rhs.yearly_after_last_month,
@@ -328,6 +367,7 @@ impl Add for Total {
 
 impl AddAssign for Total {
     fn add_assign(&mut self, rhs: Self) {
+        self.prev_last_month += rhs.prev_last_month;
         self.yearly_before_last_month += rhs.yearly_before_last_month;
         self.last_month += rhs.last_month;
         self.yearly_after_last_month += rhs.yearly_after_last_month;
@@ -340,6 +380,7 @@ fn calculate_totals(config: &Config, data: &Data) -> Result<Vec<Total>> {
     let prev_end_date = end_date.subtract(&Duration::from_str("P1M")?, None)?;
     let prev_start_date = prev_end_date.subtract(&Duration::from_str("P1Y")?, None)?;
 
+    let prev_last_months = total_categories(config, data, &prev_start_date, &start_date);
     let yearly_before_last_months =
         total_categories(config, data, &prev_start_date, &prev_end_date);
     let last_months = total_categories(config, data, &prev_end_date, &end_date);
@@ -348,6 +389,7 @@ fn calculate_totals(config: &Config, data: &Data) -> Result<Vec<Total>> {
     let mut totals = Vec::new();
     for i in 0..config.categories.len() {
         totals.push(Total {
+            prev_last_month: prev_last_months[i],
             yearly_before_last_month: yearly_before_last_months[i],
             last_month: last_months[i],
             yearly_after_last_month: yearly_after_last_months[i],
@@ -355,6 +397,70 @@ fn calculate_totals(config: &Config, data: &Data) -> Result<Vec<Total>> {
     }
 
     Ok(totals)
+}
+
+impl Total {
+    fn subtotals(&self) -> Subtotals {
+        let last = self.last_month;
+        let p_last = self.prev_last_month;
+        let avg = Dollars::from_f64(self.yearly_after_last_month.to_f64() / 12.0);
+        let p_avg = Dollars::from_f64(self.yearly_before_last_month.to_f64() / 12.0);
+
+        Subtotals {
+            last,
+            p_last,
+            avg,
+            p_avg,
+            dev_last_from_p_last: last - p_last,
+            dev_last_from_p_avg: last - p_avg,
+            dev_avg_from_p_avg: avg - p_avg,
+        }
+    }
+
+    fn report(&self, all: &Self) -> GroupReportRow {
+        let self_subtotals = self.subtotals();
+        let all_subtotals = all.subtotals();
+
+        GroupReportRow {
+            last_subtotal: self_subtotals.last,
+            last_percent: percent(self_subtotals.last, all_subtotals.last),
+            p_last_subtotal: self_subtotals.p_last,
+            p_last_percent: percent(self_subtotals.p_last, all_subtotals.p_last),
+            avg_subtotal: self_subtotals.avg,
+            avg_percent: percent(self_subtotals.avg, all_subtotals.avg),
+            p_avg_subtotal: self_subtotals.p_avg,
+            p_avg_percent: percent(self_subtotals.p_avg, all_subtotals.p_avg),
+            dev_last_from_p_last_subtotal: self_subtotals.dev_last_from_p_last,
+            dev_last_from_p_last_percent: percent(
+                self_subtotals.dev_last_from_p_last,
+                self_subtotals.p_last,
+            ),
+            dev_last_from_p_avg_subtotal: self_subtotals.dev_last_from_p_avg,
+            dev_last_from_p_avg_percent: percent(
+                self_subtotals.dev_last_from_p_avg,
+                all_subtotals.p_avg,
+            ),
+            dev_avg_from_p_avg_subtotal: self_subtotals.dev_avg_from_p_avg,
+            dev_avg_from_p_avg_percent: percent(
+                self_subtotals.dev_avg_from_p_avg,
+                all_subtotals.p_avg,
+            ),
+        }
+    }
+}
+
+fn percent(part: Dollars, whole: Dollars) -> f64 {
+    let part = part.to_f64();
+    let whole = whole.to_f64();
+    let result = part / whole * 100.0;
+
+    if (part == 0.0 && whole == 0.0) || result == 0.0 {
+        0.0
+    } else if result.is_infinite() {
+        100.0 * result.signum()
+    } else {
+        result
+    }
 }
 
 struct Group {
@@ -384,55 +490,14 @@ impl Group {
         for (c, total) in self.per_category.iter() {
             categories.insert(
                 config.categories.get_index(*c).unwrap().0.clone(),
-                GroupReportRow {
-                    last_subtotal: total.last_month,
-                    last_percent: total.last_month.to_f64() / self.total.last_month.to_f64()
-                        * 100.0,
-                    avg_subtotal: Dollars::from_f64(total.yearly_after_last_month.to_f64() / 12.0),
-                    avg_percent: total.yearly_after_last_month.to_f64()
-                        / self.total.yearly_after_last_month.to_f64()
-                        * 100.0,
-                    p_avg_subtotal: Dollars::from_f64(
-                        total.yearly_before_last_month.to_f64() / 12.0,
-                    ),
-                    p_avg_percent: total.yearly_before_last_month.to_f64()
-                        / self.total.yearly_before_last_month.to_f64()
-                        * 100.0,
-                    dev_last_from_p_avg: (total.last_month.to_f64() * 12.0
-                        / total.yearly_before_last_month.to_f64()
-                        - 1.0)
-                        * 100.0,
-                    dev_avg_from_p_avg: (total.yearly_after_last_month.to_f64()
-                        / total.yearly_before_last_month.to_f64()
-                        - 1.0)
-                        * 100.0,
-                },
+                total.report(&self.total),
             );
         }
         categories.sort_by_key(|_, row| -row.last_subtotal.to_cents().abs());
 
         GroupReport {
             categories,
-            total: GroupReportRow {
-                last_subtotal: self.total.last_month,
-                last_percent: 100.0,
-                avg_subtotal: Dollars::from_f64(self.total.yearly_after_last_month.to_f64() / 12.0),
-                avg_percent: 100.0,
-                p_avg_subtotal: Dollars::from_f64(
-                    self.total.yearly_before_last_month.to_f64() / 12.0,
-                ),
-                p_avg_percent: 100.0,
-                dev_last_from_p_avg: (self.total.last_month.to_f64() * 12.0
-                    / self.total.yearly_before_last_month.to_f64()
-                    - 1.0)
-                    * 100.0,
-                dev_avg_from_p_avg: (self.total.yearly_after_last_month.to_f64()
-                    / self.total.yearly_before_last_month.to_f64()
-                    - 1.0)
-                    * 100.0,
-            },
-            yearly_subtotal: self.total.yearly_after_last_month,
-            p_yearly_subtotal: self.total.yearly_before_last_month,
+            total: self.total.report(&self.total),
         }
     }
 }

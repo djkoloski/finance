@@ -93,7 +93,7 @@
     }
 
     col.category {
-        width: 25%;
+        width: 20%;
     }
 
     col.apy {
@@ -120,74 +120,69 @@
 
 <h1>Finance report</h1>
 
-<table id="period">
-    <col />
-    <col class="date divider" />
-    <col class="date divider" />
-    <thead>
-        <tr>
-            <th></th>
-            <th>Current</th>
-            <th>Previous</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Start date</td>
-            <td class="right">{{ report.period_start | date }}</td>
-            <td class="right">{{ report.prev_period_start | date }}</td>
-        </tr>
-        <tr>
-            <td>End date</td>
-            <td class="right">{{ report.period_end | date }}</td>
-            <td class="right">{{ report.prev_period_end | date }}</td>
-        </tr>
-    </tbody>
-</table>
-
 <h2>Yearly summary</h2>
 
 <table id="yearly">
     <col />
     <col class="date divider" />
     <col class="date divider" />
+    <col class="date divider" />
     <thead>
         <tr>
             <th></th>
-            <th>Current</th>
-            <th>Previous</th>
+            <th>Current 12 months</th>
+            <th>Previous 12 months</th>
+            <th>Change</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td>Start date</td>
+            <td class="right">{{ report.yearly.period_start | date }}</td>
+            <td class="right">{{ report.prev_yearly.period_start | date }}</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.period_start | duration }}</td>
+        </tr>
+        <tr>
+            <td>End date</td>
+            <td class="right">{{ report.yearly.period_end | date }}</td>
+            <td class="right">{{ report.prev_yearly.period_end | date }}</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.period_end | duration }}</td>
+        </tr>
+        <tr>
             <td>Total income</td>
             <td class="right">{{ report.yearly.total_income }}</td>
             <td class="right">{{ report.prev_yearly.total_income }}</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.total_income | fmt("{:+}") }}</td>
         </tr>
         <tr>
             <td>Total spending</td>
             <td class="right">{{ report.yearly.total_spending }}</td>
             <td class="right">{{ report.prev_yearly.total_spending }}</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.total_spending | fmt("{:+}") }}</td>
         </tr>
         <tr>
             <td>Net savings</td>
             <td class="right">{{ report.yearly.net_savings }}</td>
             <td class="right">{{ report.prev_yearly.net_savings }}</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.net_savings | fmt("{:+}") }}</td>
         </tr>
         <tr>
             <td>Net savings per month</td>
             <td class="right">{{ report.yearly.net_savings_per_month }}</td>
             <td class="right">{{ report.prev_yearly.net_savings_per_month }}</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.net_savings_per_month | fmt("{:+}") }}</td>
         </tr>
         <tr>
             <td>Spending-to-income ratio (average 80%)</td>
             <td class="right">{{ report.yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
             <td class="right">{{ report.prev_yearly.spending_income_ratio | fmt("{:.2}") }}%</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.spending_income_ratio | fmt("{:+.2}") }}%</td>
         </tr>
         <tr>
             <td>Individual-to-shared ratio (average 60%)</td>
             <td class="right">{{ report.yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
             <td class="right">{{ report.prev_yearly.individual_shared_ratio | fmt("{:.2}") }}%</td>
+            <td class="right">{{ report.dev_yearly_from_prev_yearly.individual_shared_ratio | fmt("{:+.2}") }}%</td>
         </tr>
     </tbody>
 </table>
